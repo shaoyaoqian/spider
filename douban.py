@@ -74,7 +74,7 @@ def fetch_one_subject(timeout=5):
 
     # 请求数据，如果请求失败，停止此次任务，下次继续。
     try: 
-        response_movie = requests.get(url=url, headers=headers, timeout=timeout)
+        response_movie = requests.get(url=url, headers=headers, timeout=timeout, proxies=proxies)
     except:
         exit()
     if response_movie.status_code != 200:
@@ -116,6 +116,11 @@ url_base = "https://movie.douban.com/subject/"
 headers = {
     "Cookie": "ll=\"118371\"; bid=ujBcNwnZ9Lc; __utmc=30149280; __utmz=30149280.1668276173.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __gads=ID=b6acfc64c8d441ac-22b7559f40d80002:T=1668276176:RT=1668276176:S=ALNI_MZdL-d_l65y7cW4EOfY4WKGi83LKw; push_noty_num=0; push_doumail_num=0; __yadk_uid=3qqwL8vX4Y42dTT0SerwrQAVqnfcTES4; dbcl2=\"62503351:VHCrjpteg4M\"; ck=4zhh; __utmv=30149280.6250; __gpi=UID=00000b7ae4562923:T=1668276176:RT=1668328812:S=ALNI_MaVl14ymNIBMp9Kma3BBYiS7-E2Cw; _pk_ses.100001.8cb4=*; __utma=30149280.657680781.1668276173.1668331581.1668339742.9; __utmt=1; _pk_id.100001.8cb4=78c23fb0f9637844.1668306835.3.1668339765.1668314288.; __utmb=30149280.4.10.1668339742",
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36 Edg/106.0.1370.52"
+}
+
+proxies = {
+  'http': 'http://127.0.0.1:7890',
+  'https': 'http://127.0.0.1:7890',
 }
 
 import time
