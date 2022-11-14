@@ -133,7 +133,7 @@ proxies = {
 
 import time
 connection, curs = init_database()
-for i in range(400):
+for i in range(200):
     # time.sleep(2)
     result = curs.execute("SELECT id, status  from MOVIE")
     message = "Number of items: " + str(len(list(result)))
