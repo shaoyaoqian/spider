@@ -106,3 +106,5 @@ dist
 *.pyc
 
 __pycache__
+
+*.html
