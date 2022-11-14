@@ -80,7 +80,7 @@ def fetch_one_subject(timeout=20):
     headers['Cookie']=Cookie.format(bid = "bid=%s" % "".join(random.sample(string.ascii_letters + string.digits, 11)))
     # headers['Cookie'] = ''
     try: 
-        response_movie = requests.get(url=url, headers=headers, timeout=timeout, proxies=proxies)
+        response_movie = requests.get(url=url, headers=headers, timeout=timeout)
     except:
         exit()
     if response_movie.status_code != 200:
