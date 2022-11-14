@@ -1,0 +1,47 @@
+name: douban
+on: 
+  schedule:
+  - cron: "0/10 * * * *"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  colect_movie_items:
+    name: Collect douban movie items
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.9
+    
+    - name: Install python packages
+      run: |
+        pip3 install bs4
+        pip3 install requests
+    
+    - name: Start crawler
+      run: python3 douban.py
+    
+    - name: Commit
+      uses: EndBug/add-and-commit@v9
+      with:
+        message: 'chore: update the data base'
+        add: '.'
+
+
+  commit_result:
+    name: Commit the result
+    runs-on: ubuntu-latest
+    needs: colect_movie_items
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Commit
+      uses: EndBug/add-and-commit@v9
+      with:
+        message: 'chore: update the data base'
+        add: './test.db'
