@@ -126,10 +126,10 @@ proxies = {
 import time
 connection, curs = init_database()
 for i in range(400):
-    time.sleep(2)
+    # time.sleep(2)
     result = curs.execute("SELECT id, status  from MOVIE")
     message = "Number of items: " + str(len(list(result)))
-    print(message)
+    print(i, message)
     if i % 20 == 0 :
         email(message,'主题测试','发件人','收件人','mpf_npu@icloud.com')
     fetch_one_subject()
