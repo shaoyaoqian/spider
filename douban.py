@@ -139,7 +139,7 @@ for i in range(200):
     message = "Number of items: " + str(len(list(result)))
     print(i, message)
     if i % 20 == 0 :
-        email(message,'主题测试','发件人','收件人','mpf_npu@icloud.com')
+        email(message,'【豆瓣爬虫】爬取到的索引数量','马鹏飞','马鹏飞','mpf_npu@icloud.com')
     fetch_one_subject()
 
 

@@ -10,7 +10,7 @@
 
 #### TODO for netease spider
 - [ ] 使用scrapy框架
-- [x] 使用vercel搭建服务
+- [x] 使用vercel搭建服务，访问地址为https://netease.pengfeima.cn
 
 
 
