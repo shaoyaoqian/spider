@@ -9,8 +9,8 @@
 - [ ] 使用scrapy框架
 
 #### TODO for netease spider
-- 使用scrapy框架
-- 使用vercel搭建服务
+- [ ] 使用scrapy框架
+- [x] 使用vercel搭建服务
 
 
 
