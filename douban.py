@@ -20,7 +20,12 @@ def analysis_movie(soup):
     title = heading[0].string
     # 查找导演
     directors_temp = soup.findAll(name='a', attrs={"rel"      :"v:directedBy"})
-    directors      = ' ' if directors_temp[0].string == None else [director.string for director in directors_temp]
+    if len(directors_temp) == 0 :
+        directors      = ' ' 
+    elif directors_temp[0].string == None :
+        directors      = ' ' 
+    else :
+        directors = [director.string for director in directors_temp]
     # 查找评分人数
     voter_temp     = soup.find(name='span', attrs={"property" :"v:votes"})
     voter          =  0  if voter_temp  == None else voter_temp.string
