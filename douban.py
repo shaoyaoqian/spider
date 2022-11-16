@@ -31,7 +31,8 @@ def analysis_movie(soup):
     voter          =  0  if voter_temp  == None else voter_temp.string
     # 查找演员
     actors_temp    = soup.findAll(name='a', attrs={"rel"      :"v:starring"})
-    actors         = ' ' if actors_temp == None else [actor.string for actor in actors_temp]
+    actors         = ' ' if actors_temp == None else [actor.string for actor in actors_temp if actor.string != None]
+    print(actors)
     # 查找类型
     kinds_temp     = soup.findAll(name='span', attrs={"property" :"v:genre"})
     kinds          = ' ' if kinds_temp == None else [kind.string for kind in kinds_temp]
