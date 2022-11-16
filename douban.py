@@ -19,19 +19,20 @@ def analysis_movie(soup):
     year = ' ' if len(heading) == 1 else heading[1].string[1:5]
     title = heading[0].string
     # 查找导演
-    directors_temp   = soup.findAll(name='a', attrs={"rel"      :"v:directedBy"})
-    directors = [director.string for director in directors_temp]
+    directors_temp = soup.findAll(name='a', attrs={"rel"      :"v:directedBy"})
+    directors      = ' ' if directors_temp[0].string == None else [director.string for director in directors_temp]
     # 查找评分人数
-    voter    =  0  if soup.find(name='span', attrs={"property" :"v:votes"}) == None else soup.find(name='span', attrs={"property" :"v:votes"}).string
+    voter_temp     = soup.find(name='span', attrs={"property" :"v:votes"})
+    voter          =  0  if voter_temp  == None else voter_temp.string
     # 查找演员
-    actors_temp   = soup.findAll(name='a', attrs={"rel"      :"v:starring"})
-    actors = [actor.string for actor in actors_temp]
+    actors_temp    = soup.findAll(name='a', attrs={"rel"      :"v:starring"})
+    actors         = ' ' if actors_temp == None else [actor.string for actor in actors_temp]
     # 查找类型
-    kinds_temp    = soup.findAll(name='span', attrs={"property" :"v:genre"})
-    kinds = [kind.string for kind in kinds_temp]
+    kinds_temp     = soup.findAll(name='span', attrs={"property" :"v:genre"})
+    kinds          = ' ' if kinds_temp == None else [kind.string for kind in kinds_temp]
     # 查找国家
-    country = soup.find_all(name='span',text='制片国家/地区:')
-    country = ' ' if len(country) == 0 else country[0].next_sibling
+    country        = soup.find_all(name='span',text='制片国家/地区:')
+    country        = ' ' if len(country) == 0 else country[0].next_sibling
     # 拼接副标题
     subtitle = " {} / {} / {} / {} ".format(
         ",".join(country.split(" / ")), 
