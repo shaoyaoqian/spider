@@ -87,4 +87,15 @@ result = NA.singer_albums()
 result = NA.song()
 result = NA.song_download()
 
+# 从歌手id收集专辑
+id = "101988"
+result = NA.singer_albums(id = id)
+albumSize = result.json()['artist']['albumSize'] # 专辑数量
+print(albumSize)
+for i in range(albumSize//30+1):
+    offset=30*i
+    limit = 30
+    result = NA.singer_albums(id = id, limit=limit, offset=offset)
+    for j in range(min(30, albumSize-offset)):
+        print(result.json()['hotAlbums'][j]['id'])  # 第j张专辑的id
 

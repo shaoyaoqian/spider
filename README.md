@@ -11,6 +11,7 @@
 #### TODO for netease spider
 - [ ] 使用scrapy框架
 - [x] 使用vercel搭建服务，访问地址为https://netease.pengfeima.cn
+- [ ] 爬取一个歌手的所有歌曲：歌手 => 专辑 => 歌曲
 
 
 
