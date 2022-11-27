@@ -109,3 +109,6 @@ __pycache__
 
 *.html
 .DS_Store
+
+songs/*.txt
+songs/*.mp3

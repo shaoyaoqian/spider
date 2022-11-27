@@ -76,14 +76,20 @@ class NeteaseAPI():
 
     def song_download(self, id = '1834270728', level = 'standard', filename = "filename"):
         result = self.song(id=id,level=level)
-        # TODO : 判断歌曲是否能下载
         url_song =  result.json()['data'][0]['url']
-        appendix = '.' + url_song.split(".")[-1]
-        response = requests.get(url_song)
-        # TODO : 文件名需要外部传入，后缀需要从url解析
-        with open(filename + appendix, 'wb') as f:
-            f.write(response.content)
-        print(response.url)
+        print("url_song: ", url_song)
+        # 判断歌曲是否能下载
+        if url_song == None :
+            appendix = ".txt"
+            with open(filename + appendix, 'wb') as f:
+                f.write(filename.encode())
+        else :
+            appendix = '.' + url_song.split(".")[-1]
+            response = requests.get(url_song)
+            # 文件名外部传入，后缀从url解析
+            with open(filename + appendix, 'wb') as f:
+                f.write(response.content)
+            print(response.url)
         return filename + appendix
 
 
@@ -98,40 +104,25 @@ NA = NeteaseAPI()
 # result = NA.song_download(id="1309394503")
 
 # 从歌手id收集专辑
-# id = "101988"
-# result = NA.singer_albums(id = id)
-# albumSize = result.json()['artist']['albumSize'] # 专辑数量
-# print(albumSize)
-# for i in range(albumSize//30+1):
-#     offset=30*i
-#     limit = 30
-#     result = NA.singer_albums(id = id, limit=limit, offset=offset)
-#     for j in range(min(30, albumSize-offset)):
-#         print(result.json()['hotAlbums'][j]['id'])  # 第j张专辑的id
-
-
-
-# 用eyeD3写入 mp3 标签 
-# 参考：https://blog.csdn.net/lly1122334/article/details/119570021
-
-import eyed3
-audiofile = eyed3.load('阿的说法饿.mp3')
-audiofile.tag.title = '晴天'                 # 标题 ok
-audiofile.tag.artist = '周杰伦'              # 艺术家
-audiofile.tag.album = '叶惠美'               # 唱片集 ok
-# audiofile.tag.recording_date = '2003'       # 年份   ok
-# audiofile.tag.track_num = 3                 # 音轨号 ok
-# audiofile.tag.genre = 'Pop'                 # 流派   X
-# audiofile.tag.comments.set('Hello World!')  # 注释(专辑描述) ok
-# audiofile.tag.album_artist = '周杰伦'        # 专辑集艺术家 ok
-# audiofile.tag.composer = '周杰伦'            # 作曲家     X
-# audiofile.tag.aa = 3                        # CD号,光盘编号 X
-# audiofile.tag.images.set(type_=3, img_data=open('RE4wEas.jpeg', 'rb').read(), mime_type='image/jpeg')  # 封面(专辑封面) ok
-# audiofile.tag.save(version=eyed3.id3.ID3_DEFAULT_VERSION, encoding='utf-8')
+def collect_singer_albums(id = "101988"):
+    album_ids = []
+    result = NA.singer_albums(id = id)
+    albumSize = result.json()['artist']['albumSize'] # 专辑数量
+    print(albumSize)
+    for i in range(albumSize//30+1):
+        offset=30*i
+        limit = 30
+        result = NA.singer_albums(id = id, limit=limit, offset=offset)
+        for j in range(min(30, albumSize-offset)):
+            # 第j张专辑的id
+            album_ids.append(result.json()['hotAlbums'][j]['id'])
+    
+    print(album_ids)
+    return(album_ids)
 
 import eyed3, time
 
-def download_album(album_id = "73256816", directory = "songs/"):
+def download_album(album_id = "35069014", directory = "songs/", time_sleep=5):
     result = NA.album(album_id)
     # 出版时间
     timeStamp = result.json()["album"]["publishTime"]
@@ -139,18 +130,17 @@ def download_album(album_id = "73256816", directory = "songs/"):
     album_time = time.strftime("%Y%m%d", timeArray)
     # 专辑名称
     album_name = result.json()["album"]["name"]
-    print(album_name)
     # 专辑描述
     album_description = result.json()["album"]["description"]
-    print(album_description)
     # 专辑封面
     album_picture_url = result.json()["album"]["picUrl"]
-    print(album_picture_url)
+    print(album_name, album_time, album_picture_url, album_description)
     # 专辑集艺术家(可能有几个)
     album_artists = [album_artist["name"] for album_artist in result.json()["album"]["artists"]]
     # 单曲标题
     songs = result.json()["songs"]
     for song in songs:
+        time.sleep(time_sleep)
         # 单曲id
         song_id = song["id"]
         # 单曲名
@@ -164,23 +154,29 @@ def download_album(album_id = "73256816", directory = "songs/"):
         print(song_filename)
         # 下载单曲
         song_filename_appendix = NA.song_download(id = song_id, filename = directory + song_filename)
-        audiofile = eyed3.load(song_filename_appendix)
-        audiofile.tag.title = song_name                       # 标题 ok
-        audiofile.tag.artist = ", ".join(song_artists)        # 艺术家
-        audiofile.tag.album = album_name                      # 唱片集 ok
-        audiofile.tag.release_date = album_time                 # 年份   ok
-        audiofile.tag.track_num = song_track_num              # 音轨号 ok
-        audiofile.tag.comments.set(album_description)         # 注释(专辑描述) ok
-        audiofile.tag.album_artist = ", ".join(album_artists)       # 专辑集艺术家 ok
-        audiofile.tag.images.set(type_=3, img_data=requests.get(album_picture_url).content, mime_type='image/jpeg')  # 封面(专辑封面) ok
-        audiofile.tag.save(version=eyed3.id3.ID3_DEFAULT_VERSION, encoding='utf-8')
+        # 如果下载了mp3结尾的或者flac结尾的文件，那么写入歌曲标签。
+        if song_filename_appendix.split(".")[-1] in ['mp3']:
+            audiofile = eyed3.load(song_filename_appendix)
+            audiofile.tag.title = song_name                       # 标题 ok
+            audiofile.tag.artist = ", ".join(song_artists)        # 艺术家
+            audiofile.tag.album = album_name                      # 唱片集 ok
+            audiofile.tag.recording_date = album_time                 # 年份   ok
+            audiofile.tag.track_num = song_track_num              # 音轨号 ok
+            audiofile.tag.comments.set(album_description)         # 注释(专辑描述) ok
+            audiofile.tag.album_artist = ", ".join(album_artists)       # 专辑集艺术家 ok
+            audiofile.tag.images.set(type_=3, img_data=requests.get(album_picture_url).content, mime_type='image/jpeg')  # 封面(专辑封面) ok
+            audiofile.tag.save(version=eyed3.id3.ID3_DEFAULT_VERSION, encoding='utf-8')
 
         
 
+# 歌手ID（默认谢春花）
+singer = "1039895"  
+# 收集歌手所有专辑ID
+album_ids = collect_singer_albums(id = singer)
+# 遍历所有专辑
+for album_id in album_ids:
+    download_album(album_id = album_id)
 
-download_album()
-
-import time
 
 
 
