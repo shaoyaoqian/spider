@@ -4,6 +4,10 @@
 # 第三方API服务搭建在vercel上
 
 import requests
+import eyed3, time, random
+from loguru import logger
+
+logger.add('my_log.log')
 
 phone    = '15991859247'
 password = 'a12345'
@@ -17,7 +21,7 @@ class NeteaseAPI():
             'password': password
         }
         response = requests.get(url,params=params)
-        print(response.url)
+        logger.info(response.url)
         return response
 
     def singer(self, id = "11972054"):
@@ -26,7 +30,7 @@ class NeteaseAPI():
             'id':id
         }
         response = requests.get(url,params=params)
-        print(response.url)
+        logger.info(response.url)
         return response
 
     def singer_details(self, id = "11972054"):
@@ -35,7 +39,7 @@ class NeteaseAPI():
             'id':id
         }
         response = requests.get(url,params=params)
-        print(response.url)
+        logger.info(response.url)
         return response
 
     def album(self, id = "32311"):
@@ -44,7 +48,7 @@ class NeteaseAPI():
             'id':id
         }
         response = requests.get(url,params=params)
-        print(response.url)
+        logger.info(response.url)
         return response
 
     def singer_albums(self, id = "11972054", limit=5, offset=0):
@@ -55,7 +59,7 @@ class NeteaseAPI():
             'offset':offset
         }
         response = requests.get(url,params=params)
-        print(response.url)
+        logger.info(response.url)
         return response
 
     def song(self, id = '436147423', level = 'standard'):
@@ -71,13 +75,13 @@ class NeteaseAPI():
             # hires    => Hi-Res
         }
         response = requests.get(url,params=params)
-        print(response.url)
+        logger.info(response.url)
         return response
 
     def song_download(self, id = '1834270728', level = 'standard', filename = "filename"):
         result = self.song(id=id,level=level)
         url_song =  result.json()['data'][0]['url']
-        print("url_song: ", url_song)
+        logger.info("url_song: ", url_song)
         # 判断歌曲是否能下载
         if url_song == None :
             appendix = ".txt"
@@ -89,7 +93,7 @@ class NeteaseAPI():
             # 文件名外部传入，后缀从url解析
             with open(filename + appendix, 'wb') as f:
                 f.write(response.content)
-            print(response.url)
+            logger.info(response.url)
         return filename + appendix
 
 
@@ -108,7 +112,7 @@ def collect_singer_albums(id = "101988"):
     album_ids = []
     result = NA.singer_albums(id = id)
     albumSize = result.json()['artist']['albumSize'] # 专辑数量
-    print(albumSize)
+    logger.info(albumSize)
     for i in range(albumSize//30+1):
         offset=30*i
         limit = 30
@@ -117,12 +121,11 @@ def collect_singer_albums(id = "101988"):
             # 第j张专辑的id
             album_ids.append(result.json()['hotAlbums'][j]['id'])
     
-    print(album_ids)
+    logger.info(album_ids)
     return(album_ids)
 
-import eyed3, time
 
-def download_album(album_id = "35069014", directory = "songs/", time_sleep=5):
+def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
     result = NA.album(album_id)
     # 出版时间
     timeStamp = result.json()["album"]["publishTime"]
@@ -134,13 +137,14 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=5):
     album_description = result.json()["album"]["description"]
     # 专辑封面
     album_picture_url = result.json()["album"]["picUrl"]
-    print(album_name, album_time, album_picture_url, album_description)
+    logger.info(album_name, album_time, album_picture_url, album_description)
     # 专辑集艺术家(可能有几个)
     album_artists = [album_artist["name"] for album_artist in result.json()["album"]["artists"]]
     # 单曲标题
     songs = result.json()["songs"]
     for song in songs:
-        time.sleep(time_sleep)
+        logger.info('sleeping...')
+        time.sleep(time_sleep*random.random())
         # 单曲id
         song_id = song["id"]
         # 单曲名
@@ -151,7 +155,7 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=5):
         song_artists = [song_artist["name"] for song_artist in song["ar"]]
         song_info = [", ".join(song_artists),album_name,song_name]
         song_filename = " - ".join(song_info)
-        print(song_filename)
+        logger.info('song_filename:', song_filename)
         # 下载单曲
         song_filename_appendix = NA.song_download(id = song_id, filename = directory + song_filename)
         # 如果下载了mp3结尾的或者flac结尾的文件，那么写入歌曲标签。
