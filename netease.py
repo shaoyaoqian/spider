@@ -82,6 +82,8 @@ class NeteaseAPI():
         result = self.song(id=id,level=level)
         url_song =  result.json()['data'][0]['url']
         logger.info("url_song: ", url_song)
+        logger.info("filename:")
+        logger.info(filename)
         # 判断歌曲是否能下载
         if url_song == None :
             appendix = ".txt"
@@ -155,7 +157,8 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
         song_artists = [song_artist["name"] for song_artist in song["ar"]]
         song_info = [", ".join(song_artists),album_name,song_name]
         song_filename = " - ".join(song_info)
-        logger.info('song_filename:', song_filename)
+        logger.info("song_filename:")
+        logger.info(song_filename)
         # 下载单曲
         song_filename_appendix = NA.song_download(id = song_id, filename = directory + song_filename)
         # 如果下载了mp3结尾的或者flac结尾的文件，那么写入歌曲标签。
@@ -174,7 +177,7 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
         
 
 # 歌手ID（默认谢春花）
-singer = "1039895"  
+singer = "10557"  
 # 收集歌手所有专辑ID
 album_ids = collect_singer_albums(id = singer)
 # 遍历所有专辑
