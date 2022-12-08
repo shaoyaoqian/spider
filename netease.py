@@ -21,7 +21,7 @@ class NeteaseAPI():
             'password': password
         }
         response = requests.get(url,params=params)
-        logger.info(response.url)
+        logger.info("response.url: {}".format(response.url))
         return response
 
     def singer(self, id = "11972054"):
@@ -30,7 +30,7 @@ class NeteaseAPI():
             'id':id
         }
         response = requests.get(url,params=params)
-        logger.info(response.url)
+        logger.info("response.url: {}".format(response.url))
         return response
 
     def singer_details(self, id = "11972054"):
@@ -39,7 +39,7 @@ class NeteaseAPI():
             'id':id
         }
         response = requests.get(url,params=params)
-        logger.info(response.url)
+        logger.info("response.url: {}".format(response.url))
         return response
 
     def album(self, id = "32311"):
@@ -48,7 +48,7 @@ class NeteaseAPI():
             'id':id
         }
         response = requests.get(url,params=params)
-        logger.info(response.url)
+        logger.info("response.url: {}".format(response.url))
         return response
 
     def singer_albums(self, id = "11972054", limit=5, offset=0):
@@ -59,7 +59,7 @@ class NeteaseAPI():
             'offset':offset
         }
         response = requests.get(url,params=params)
-        logger.info(response.url)
+        logger.info("response.url: {}".format(response.url))
         return response
 
     def song(self, id = '436147423', level = 'standard'):
@@ -75,15 +75,14 @@ class NeteaseAPI():
             # hires    => Hi-Res
         }
         response = requests.get(url,params=params)
-        logger.info(response.url)
+        logger.info("response.url: {}".format(response.url))
         return response
 
     def song_download(self, id = '1834270728', level = 'standard', filename = "filename"):
         result = self.song(id=id,level=level)
         url_song =  result.json()['data'][0]['url']
-        logger.info("url_song: ", url_song)
-        logger.info("filename:")
-        logger.info(filename)
+        logger.info("url_song: {}".format(url_song))
+        logger.info("song_path: {}".format(filename))
         # 判断歌曲是否能下载
         if url_song == None :
             appendix = ".txt"
@@ -95,7 +94,7 @@ class NeteaseAPI():
             # 文件名外部传入，后缀从url解析
             with open(filename + appendix, 'wb') as f:
                 f.write(response.content)
-            logger.info(response.url)
+            logger.info("response.url: {}".format(response.url))
         return filename + appendix
 
 
@@ -114,7 +113,7 @@ def collect_singer_albums(id = "101988"):
     album_ids = []
     result = NA.singer_albums(id = id)
     albumSize = result.json()['artist']['albumSize'] # 专辑数量
-    logger.info(albumSize)
+    logger.info("albumSize: {}".format(albumSize))
     for i in range(albumSize//30+1):
         offset=30*i
         limit = 30
@@ -123,6 +122,7 @@ def collect_singer_albums(id = "101988"):
             # 第j张专辑的id
             album_ids.append(result.json()['hotAlbums'][j]['id'])
     
+    logger.info("album_ids: ")
     logger.info(album_ids)
     return(album_ids)
 
@@ -132,7 +132,8 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
     # 出版时间
     timeStamp = result.json()["album"]["publishTime"]
     timeArray = time.localtime(timeStamp/1000)
-    album_time = time.strftime("%Y%m%d", timeArray)
+    album_time = time.strftime("%Y", timeArray)
+    logger.info("album_time: {}", album_time)
     # 专辑名称
     album_name = result.json()["album"]["name"]
     # 专辑描述
@@ -152,15 +153,15 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
         # 单曲名
         song_name = song["name"]
         # 音轨号
-        song_track_num = song["no"]
+        song_track_num = 0 if song["no"] != None else song["no"]
         # 单曲艺术家
         song_artists = [song_artist["name"] for song_artist in song["ar"]]
         song_info = [", ".join(song_artists),album_name,song_name]
         song_filename = " - ".join(song_info)
-        logger.info("song_filename:")
-        logger.info(song_filename)
+        logger.info('song_filename: {}'.format(song_filename))
         # 下载单曲
         song_filename_appendix = NA.song_download(id = song_id, filename = directory + song_filename)
+        logger.info("song_filename_appendix: {}", song_filename_appendix)
         # 如果下载了mp3结尾的或者flac结尾的文件，那么写入歌曲标签。
         if song_filename_appendix.split(".")[-1] in ['mp3']:
             audiofile = eyed3.load(song_filename_appendix)
@@ -169,20 +170,22 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
             audiofile.tag.album = album_name                      # 唱片集 ok
             audiofile.tag.recording_date = album_time                 # 年份   ok
             audiofile.tag.track_num = song_track_num              # 音轨号 ok
-            audiofile.tag.comments.set(album_description)         # 注释(专辑描述) ok
             audiofile.tag.album_artist = ", ".join(album_artists)       # 专辑集艺术家 ok
             audiofile.tag.images.set(type_=3, img_data=requests.get(album_picture_url).content, mime_type='image/jpeg')  # 封面(专辑封面) ok
             audiofile.tag.save(version=eyed3.id3.ID3_DEFAULT_VERSION, encoding='utf-8')
 
         
 
-# 歌手ID（默认谢春花）
-singer = "10557"  
-# 收集歌手所有专辑ID
-album_ids = collect_singer_albums(id = singer)
-# 遍历所有专辑
-for album_id in album_ids:
-    download_album(album_id = album_id)
+download_album(album_id = "34535673",time_sleep=0)
+
+# # 歌手ID（默认谢春花）
+# singer = "10557"  
+# # 收集歌手所有专辑ID
+# album_ids = collect_singer_albums(id = singer)
+# # 遍历所有专辑
+# for album_id in album_ids:
+#     download_album(album_id = album_id)
+
 
 
 
