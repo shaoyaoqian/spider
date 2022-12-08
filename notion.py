@@ -3,8 +3,16 @@ import requests
 # 前期准备以及token的获取可参考：https://zhuanlan.zhihu.com/p/381527284
 #                            https://www.zhihu.com/column/c_1389160991083692032
 # 本页对应的数据库：https://www.notion.so/38a93f2a26284b19bc749cbf7464dabc?v=472018357e6a44b0865bd232fc099fa5
+# 
+# 创建数据库并使之与应用关联
+# ![image-20221208182723007](http://qiniu.pengfeima.cn/typora/202212081827071.png)
+# ![image-20221208182731099](http://qiniu.pengfeima.cn/typora/202212081827127.png)
+# ![image-20221208182616001](http://qiniu.pengfeima.cn/typora/202212081826430.png)
+# ![image-20221208182625362](http://qiniu.pengfeima.cn/typora/202212081826447.png)
+
 token = 'secret_feFoTGfTuwtdjxCzpsdutFWQtzW5stxZQkRucn1AUGC'
 database_id = '38a93f2a26284b19bc749cbf7464dabc'
+database_id = 'e145a39f471f4134ab2aeb6c0b29cf00'
 headers = {
     'Notion-Version': '2021-05-13',# 在新版中必须加入版本信息
     'Authorization': 'Bearer '+token,# 这一行也必须要有
