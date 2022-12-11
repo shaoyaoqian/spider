@@ -7,6 +7,43 @@ import string
 from utils import email
 from database import *
 
+
+
+
+
+
+
+def write_notion(id, movie_info):
+    token = 'secret_feFoTGfTuwtdjxCzpsdutFWQtzW5stxZQkRucn1AUGC'
+    database_id = '38a93f2a26284b19bc749cbf7464dabc'
+    headers = {
+        'Notion-Version': '2021-05-13',# 在新版中必须加入版本信息
+        'Authorization': 'Bearer '+token,# 这一行也必须要有
+    }
+    # 构建上传数据的格式
+    body = {
+        'parent': {'type': 'database_id', 'database_id': database_id},
+    }
+    # 获取数据结构
+    default_page = "0fcffd8d-9743-46fc-ad5f-4144cfe1a44e"
+    url_default_page = "https://api.notion.com/v1/pages/"+default_page
+    notion_response = requests.get(url_default_page,headers=headers)
+    # 写入数据
+    title, year, subtitle, rating, poster, voter = movie_info
+    properties = notion_response.json()['properties']
+    properties['评分']['rich_text'][0]['text']['content'] = rating
+    properties['ID']['title'][0]['text']['content'] = id
+    properties['标题']['rich_text'][0]['text']['content'] = title
+    properties['年份']['rich_text'][0]['text']['content'] = year
+    properties['副标题']['rich_text'][0]['text']['content'] = subtitle
+    properties['海报']['rich_text'][0]['text']['content'] = poster
+    properties['评分人数']['rich_text'][0]['text']['content'] = voter
+    body['properties'] = properties
+    url_notion_additem = 'https://api.notion.com/v1/pages'
+    notion_additem = requests.post(url_notion_additem,headers=headers,json=body)
+    print(notion_additem.json())
+
+
 # 分析网页
 def analysis_movie(soup):
     # 查找标题
@@ -99,7 +136,9 @@ def fetch_one_subject(timeout=20):
 
     # 解析并数据
     movie_info = analysis_movie(soup)
+    write_notion(str(seed),movie_info)
     csv_writer(str(seed),movie_info)
+    print(movie_info)
 
     # 更新数据库
     # 如果数据库中没有这个条目，那么将此条目写入数据库

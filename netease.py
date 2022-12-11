@@ -62,6 +62,24 @@ class NeteaseAPI():
         logger.info("response.url: {}".format(response.url))
         return response
 
+    def song_lyric(self, id = '436147423'):
+        url = url_base + "/lyric"
+        params = {
+            'id':id
+        }
+        response = requests.get(url,params=params)
+        logger.info("response.url: {}".format(response.url))
+        return response
+
+    def song_detail(self, id = '436147423'):
+        url = url_base + "/song/detail"
+        params = {
+            'ids':id
+        }
+        response = requests.get(url,params=params)
+        logger.info("response.url: {}".format(response.url))
+        return response
+
     def song(self, id = '436147423', level = 'standard'):
         # url = url_base + "/song/url"          # old API
         url = url_base + "/song/url/v1"
@@ -105,8 +123,25 @@ NA = NeteaseAPI()
 # result = NA.singer_details()
 # result = NA.album()
 # result = NA.singer_albums()
-# result = NA.song()
-# result = NA.song_download(id="1309394503")
+id="1974443814"
+result = NA.song(id=id)
+result = NA.song_detail(id=id)
+
+song_name = result.json()['songs'][0]['name']
+singer_name = result.json()['songs'][0]['ar'][0]['name']
+
+with open("-".join([id,song_name,singer_name])+'.txt', 'wb') as f:
+    f.write(result.content)
+
+response = requests.get(result.json()['songs'][0]['al']['picUrl'])
+with open(id+'.png', 'wb') as f:
+    f.write(response.content)
+
+result = NA.song_lyric(id=id)
+with open(id+'.lrc', 'w') as f:
+    f.write(result.json()['lrc']['lyric'])
+
+result = NA.song_download(id=id,filename=id)
 
 # 从歌手id收集专辑
 def collect_singer_albums(id = "101988"):
@@ -176,7 +211,7 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
 
         
 
-download_album(album_id = "34535673",time_sleep=0)
+# download_album(album_id = "34535673",time_sleep=0)
 
 # # 歌手ID（默认谢春花）
 # singer = "10557"  
@@ -185,7 +220,6 @@ download_album(album_id = "34535673",time_sleep=0)
 # # 遍历所有专辑
 # for album_id in album_ids:
 #     download_album(album_id = album_id)
-
 
 
 
