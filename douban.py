@@ -184,7 +184,7 @@ for i in range(200):
     result = curs.execute("SELECT id, status  from MOVIE")
     message = "Number of items: " + str(len(list(result)))
     print(i, message)
-    if i % 20 == 0 :
+    if i % 100 == 0 :
         email(message,'【豆瓣爬虫】爬取到的索引数量','马鹏飞','马鹏飞','mpf_npu@icloud.com')
     fetch_one_subject()
 
