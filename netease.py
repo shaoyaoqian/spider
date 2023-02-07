@@ -5,13 +5,18 @@
 
 import requests
 import eyed3, time, random
+import time
 from loguru import logger
 
 logger.add('my_log.log')
 
 phone    = '15991859247'
 password = 'a12345'
-url_base = "https://netease.pengfeima.cn"
+url_base = "https://neteaseapi.pengfeima.cn"
+
+body = {
+        'cookie': 'MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/openapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/feedback; HTTPOnly;MUSIC_SNS=; Max-Age=0; Expires=Tue, 07 Feb 2023 07:04:16 GMT; Path=/;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/feedback; HTTPOnly;__csrf=150aeebc0a75d90aa2cbf1eab675221a; Max-Age=1296010; Expires=Wed, 22 Feb 2023 07:04:26 GMT; Path=/;;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/openapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/clientlog; HTTPOnly;MUSIC_U=9e989f17616003dac853e13d9fe8b598fbe7ddbc550303f83e4411627598e2851e8907c67206e1ed57d74b51b574d70cbe24b29a98079908d4203591aaeb3f3b350fc70521cd88eca0d2166338885bd7; Max-Age=15552000; Expires=Sun, 06 Aug 2023 07:04:16 GMT; Path=/; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/clientlog; HTTPOnly'
+    }
 
 class NeteaseAPI():
     def login(self):
@@ -23,13 +28,35 @@ class NeteaseAPI():
         response = requests.get(url,params=params)
         logger.info("response.url: {}".format(response.url))
         return response
+    
+    def login_qr(self):
+        url = url_base+"/login/qr/key"
+        params = {
+        }
+        response = requests.get(url,params=params)
+        logger.info("response.url: {}".format(response.url))
+        logger.info("key: {}".format(response.json()['data']['unikey']))
+        key = response.json()['data']['unikey']
+        url = url_base+"/login/qr/create?key={}&qrimg=true".format(key)
+        response = requests.get(url,params=params)
+        logger.info("{}".format(response.json()['data']['qrimg']))
+        import base64        
+        request_base64=response.json()['data']['qrimg'][21:]
+        imgdata = base64.b64decode(request_base64)
+        with open("imageToSave.png","wb") as fh:
+            fh.write(imgdata)
+        time.sleep(100)
+        url = url_base+"/login/qr/check?key={}".format(key)
+        response = requests.get(url,params=params)
+        logger.info("{}".format(response.json()))
+        return response
 
     def singer(self, id = "11972054"):
         url = url_base + "/artist/desc"
         params = {
             'id':id
         }
-        response = requests.get(url,params=params)
+        response = requests.get(url,params=params, data=body)
         logger.info("response.url: {}".format(response.url))
         return response
 
@@ -38,7 +65,7 @@ class NeteaseAPI():
         params = {
             'id':id
         }
-        response = requests.get(url,params=params)
+        response = requests.get(url,params=params, data=body)
         logger.info("response.url: {}".format(response.url))
         return response
 
@@ -47,7 +74,7 @@ class NeteaseAPI():
         params = {
             'id':id
         }
-        response = requests.get(url,params=params)
+        response = requests.get(url,params=params, data=body)
         logger.info("response.url: {}".format(response.url))
         return response
 
@@ -58,7 +85,7 @@ class NeteaseAPI():
             'limit':limit,
             'offset':offset
         }
-        response = requests.get(url,params=params)
+        response = requests.get(url,params=params, data=body)
         logger.info("response.url: {}".format(response.url))
         return response
 
@@ -67,7 +94,7 @@ class NeteaseAPI():
         params = {
             'id':id
         }
-        response = requests.get(url,params=params)
+        response = requests.get(url,params=params, data=body)
         logger.info("response.url: {}".format(response.url))
         return response
 
@@ -76,7 +103,7 @@ class NeteaseAPI():
         params = {
             'ids':id
         }
-        response = requests.get(url,params=params)
+        response = requests.get(url,params=params, data=body)
         logger.info("response.url: {}".format(response.url))
         return response
 
@@ -92,7 +119,7 @@ class NeteaseAPI():
             # lossless => 无损 
             # hires    => Hi-Res
         }
-        response = requests.get(url,params=params)
+        response = requests.get(url,params=params, data=body)
         logger.info("response.url: {}".format(response.url))
         return response
 
@@ -117,31 +144,44 @@ class NeteaseAPI():
 
 
 # test 
-NA = NeteaseAPI()
-# result = NA.login()
+# result = NA.login_qr()
 # result = NA.singer()
 # result = NA.singer_details()
 # result = NA.album()
 # result = NA.singer_albums()
-id="1974443814"
-result = NA.song(id=id)
-result = NA.song_detail(id=id)
+NA = NeteaseAPI()
 
-song_name = result.json()['songs'][0]['name']
-singer_name = result.json()['songs'][0]['ar'][0]['name']
+def song_download_full(id="28660001",path='songs'):
+    result = NA.song(id=id)
+    result = NA.song_detail(id=id)
+    song_name = result.json()['songs'][0]['name']
+    singer_name = result.json()['songs'][0]['ar'][0]['name']
+    singer_name = [song_artist["name"] for song_artist in result.json()['songs'][0]["ar"]]
+    singer_name = ", ".join(singer_name)
+    print([id,song_name,singer_name])
+    with open(path+'/'+"-".join([id,song_name,singer_name])+'.json', 'wb') as f:
+        f.write(result.content)
 
-with open("-".join([id,song_name,singer_name])+'.txt', 'wb') as f:
-    f.write(result.content)
+    response = requests.get(result.json()['songs'][0]['al']['picUrl'])
+    with open(path+'/'+id+'.png', 'wb') as f:
+        f.write(response.content)
 
-response = requests.get(result.json()['songs'][0]['al']['picUrl'])
-with open(id+'.png', 'wb') as f:
-    f.write(response.content)
+    result = NA.song_lyric(id=id)
+    with open(path+'/'+id+'.lrc', 'w') as f:
+        f.write(result.json()['lrc']['lyric'])
 
-result = NA.song_lyric(id=id)
-with open(id+'.lrc', 'w') as f:
-    f.write(result.json()['lrc']['lyric'])
+    result = NA.song_download(id=id,filename=path+'/'+id)
 
-result = NA.song_download(id=id,filename=id)
+    cdn_base = "https://raw.githubusercontent.com/shaoyaoqian/spider/main/"+path
+    song_info = {}
+    song_info['name'] = song_name
+    song_info['artist'] = singer_name
+    song_info['info'] = path+'/'+"-".join([id,song_name,singer_name])+'.json'
+    song_info['audio'] = cdn_base+id+".mp3"
+    song_info['cover'] = cdn_base+id+".png"
+    song_info['lrc'] = cdn_base+id+".lrc"
+    song_info['id'] = id
+    return song_info
 
 # 从歌手id收集专辑
 def collect_singer_albums(id = "101988"):
@@ -162,7 +202,7 @@ def collect_singer_albums(id = "101988"):
     return(album_ids)
 
 
-def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
+def download_album(album_id = "35069014", directory = "songs/albums/", time_sleep=30):
     result = NA.album(album_id)
     # 出版时间
     timeStamp = result.json()["album"]["publishTime"]
@@ -180,34 +220,22 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
     album_artists = [album_artist["name"] for album_artist in result.json()["album"]["artists"]]
     # 单曲标题
     songs = result.json()["songs"]
+    songs_info = []
+    path = directory+album_name+"/"
+    import os
+    if not os.path.isdir(path):
+        os.makedirs(path)
     for song in songs:
         logger.info('sleeping...')
         time.sleep(time_sleep*random.random())
         # 单曲id
-        song_id = song["id"]
-        # 单曲名
-        song_name = song["name"]
-        # 音轨号
-        song_track_num = 0 if song["no"] != None else song["no"]
-        # 单曲艺术家
-        song_artists = [song_artist["name"] for song_artist in song["ar"]]
-        song_info = [", ".join(song_artists),album_name,song_name]
-        song_filename = " - ".join(song_info)
-        logger.info('song_filename: {}'.format(song_filename))
-        # 下载单曲
-        song_filename_appendix = NA.song_download(id = song_id, filename = directory + song_filename)
-        logger.info("song_filename_appendix: {}", song_filename_appendix)
-        # 如果下载了mp3结尾的或者flac结尾的文件，那么写入歌曲标签。
-        if song_filename_appendix.split(".")[-1] in ['mp3']:
-            audiofile = eyed3.load(song_filename_appendix)
-            audiofile.tag.title = song_name                       # 标题 ok
-            audiofile.tag.artist = ", ".join(song_artists)        # 艺术家
-            audiofile.tag.album = album_name                      # 唱片集 ok
-            audiofile.tag.recording_date = album_time                 # 年份   ok
-            audiofile.tag.track_num = song_track_num              # 音轨号 ok
-            audiofile.tag.album_artist = ", ".join(album_artists)       # 专辑集艺术家 ok
-            audiofile.tag.images.set(type_=3, img_data=requests.get(album_picture_url).content, mime_type='image/jpeg')  # 封面(专辑封面) ok
-            audiofile.tag.save(version=eyed3.id3.ID3_DEFAULT_VERSION, encoding='utf-8')
+        song_id = str(song["id"])
+        song_info = song_download_full(id=song_id, path=path)
+        songs_info.append(song_info)
+    with open (path+'info.json','w') as f:
+        import json
+        json.dump(songs_info,f)
+
 
         
 
@@ -221,6 +249,8 @@ def download_album(album_id = "35069014", directory = "songs/", time_sleep=30):
 # for album_id in album_ids:
 #     download_album(album_id = album_id)
 
+album_id = "34535673"
 
+download_album(album_id = album_id)
 
 
