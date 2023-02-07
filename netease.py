@@ -236,18 +236,18 @@ def download_album(album_id = "35069014", directory = "songs/albums/", time_slee
 
 
         
-# 下载一张专辑
-album_id = "34535673"
-download_album(album_id = album_id)
+# # 下载一张专辑
+# album_id = "34535673"
+# download_album(album_id = album_id)
 
 # 下载一位歌手的所有专辑
-# # 歌手ID（默认谢春花）
-# singer = "10557"  
-# # 收集歌手所有专辑ID
-# album_ids = collect_singer_albums(id = singer)
-# # 遍历所有专辑
-# for album_id in album_ids:
-#     download_album(album_id = album_id)
+# 歌手ID（默认谢春花）
+singer = "10557"  
+# 收集歌手所有专辑ID
+album_ids = collect_singer_albums(id = singer)
+# 遍历所有专辑
+for album_id in album_ids:
+    download_album(album_id = album_id)
 
 
 
