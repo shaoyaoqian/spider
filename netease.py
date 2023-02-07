@@ -4,8 +4,7 @@
 # 第三方API服务搭建在vercel上
 
 import requests
-import eyed3, time, random
-import time
+import time, random
 from loguru import logger
 
 logger.add('my_log.log')
@@ -15,8 +14,8 @@ password = 'a12345'
 url_base = "https://neteaseapi.pengfeima.cn"
 
 body = {
-        'cookie': 'MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/openapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/feedback; HTTPOnly;MUSIC_SNS=; Max-Age=0; Expires=Tue, 07 Feb 2023 07:04:16 GMT; Path=/;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/feedback; HTTPOnly;__csrf=150aeebc0a75d90aa2cbf1eab675221a; Max-Age=1296010; Expires=Wed, 22 Feb 2023 07:04:26 GMT; Path=/;;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/openapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/clientlog; HTTPOnly;MUSIC_U=9e989f17616003dac853e13d9fe8b598fbe7ddbc550303f83e4411627598e2851e8907c67206e1ed57d74b51b574d70cbe24b29a98079908d4203591aaeb3f3b350fc70521cd88eca0d2166338885bd7; Max-Age=15552000; Expires=Sun, 06 Aug 2023 07:04:16 GMT; Path=/; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/clientlog; HTTPOnly'
-    }
+    'cookie': 'MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/openapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/feedback; HTTPOnly;MUSIC_SNS=; Max-Age=0; Expires=Tue, 07 Feb 2023 07:04:16 GMT; Path=/;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/feedback; HTTPOnly;__csrf=150aeebc0a75d90aa2cbf1eab675221a; Max-Age=1296010; Expires=Wed, 22 Feb 2023 07:04:26 GMT; Path=/;;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/wapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/clientlog; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/neapi/feedback; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/openapi/clientlog; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/api/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/feedback; HTTPOnly;MUSIC_R_T=1458378773117; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/eapi/clientlog; HTTPOnly;MUSIC_U=9e989f17616003dac853e13d9fe8b598fbe7ddbc550303f83e4411627598e2851e8907c67206e1ed57d74b51b574d70cbe24b29a98079908d4203591aaeb3f3b350fc70521cd88eca0d2166338885bd7; Max-Age=15552000; Expires=Sun, 06 Aug 2023 07:04:16 GMT; Path=/; HTTPOnly;MUSIC_A_T=1458378730164; Max-Age=2147483647; Expires=Sun, 25 Feb 2091 10:18:23 GMT; Path=/weapi/clientlog; HTTPOnly'
+}
 
 class NeteaseAPI():
     def login(self):
@@ -30,28 +29,35 @@ class NeteaseAPI():
         return response
     
     def login_qr(self):
+        # 获取二维码的key
         url = url_base+"/login/qr/key"
-        params = {
-        }
+        params = { }
         response = requests.get(url,params=params)
         logger.info("response.url: {}".format(response.url))
         logger.info("key: {}".format(response.json()['data']['unikey']))
         key = response.json()['data']['unikey']
+        # 获取二维码图片
         url = url_base+"/login/qr/create?key={}&qrimg=true".format(key)
         response = requests.get(url,params=params)
         logger.info("{}".format(response.json()['data']['qrimg']))
+        # 保存二维码图片
         import base64        
         request_base64=response.json()['data']['qrimg'][21:]
         imgdata = base64.b64decode(request_base64)
-        with open("imageToSave.png","wb") as fh:
+        with open("NeteaseQR.png","wb") as fh:
             fh.write(imgdata)
+        # 等待扫描二维码
         time.sleep(100)
+        # 打印cookie
         url = url_base+"/login/qr/check?key={}".format(key)
         response = requests.get(url,params=params)
-        logger.info("{}".format(response.json()))
+        logger.info("{}".format(response.json()['cookie']))
         return response
 
     def singer(self, id = "11972054"):
+        """
+        获取歌手信息
+        """
         url = url_base + "/artist/desc"
         params = {
             'id':id
@@ -143,40 +149,32 @@ class NeteaseAPI():
         return filename + appendix
 
 
-# test 
-# result = NA.login_qr()
-# result = NA.singer()
-# result = NA.singer_details()
-# result = NA.album()
-# result = NA.singer_albums()
 NA = NeteaseAPI()
 
-def song_download_full(id="28660001",path='songs'):
+def song_download_entirely(id="28660001",path='songs'):
     result = NA.song(id=id)
     result = NA.song_detail(id=id)
     song_name = result.json()['songs'][0]['name']
-    singer_name = result.json()['songs'][0]['ar'][0]['name']
     singer_name = [song_artist["name"] for song_artist in result.json()['songs'][0]["ar"]]
     singer_name = ", ".join(singer_name)
-    print([id,song_name,singer_name])
+    # 保存歌曲信息
     with open(path+'/'+"-".join([id,song_name,singer_name])+'.json', 'wb') as f:
         f.write(result.content)
-
+    # 下载封面
     response = requests.get(result.json()['songs'][0]['al']['picUrl'])
     with open(path+'/'+id+'.png', 'wb') as f:
         f.write(response.content)
-
+    # 下载歌词
     result = NA.song_lyric(id=id)
     with open(path+'/'+id+'.lrc', 'w') as f:
         f.write(result.json()['lrc']['lyric'])
-
+    # 下载歌曲
     result = NA.song_download(id=id,filename=path+'/'+id)
-
     cdn_base = "https://raw.githubusercontent.com/shaoyaoqian/spider/main/"+path
     song_info = {}
     song_info['name'] = song_name
     song_info['artist'] = singer_name
-    song_info['info'] = path+'/'+"-".join([id,song_name,singer_name])+'.json'
+    song_info['info'] = cdn_base+"-".join([id,song_name,singer_name])+'.json'
     song_info['audio'] = cdn_base+id+".mp3"
     song_info['cover'] = cdn_base+id+".png"
     song_info['lrc'] = cdn_base+id+".lrc"
@@ -201,7 +199,7 @@ def collect_singer_albums(id = "101988"):
     logger.info(album_ids)
     return(album_ids)
 
-
+# 下载一张专辑
 def download_album(album_id = "35069014", directory = "songs/albums/", time_sleep=30):
     result = NA.album(album_id)
     # 出版时间
@@ -230,7 +228,7 @@ def download_album(album_id = "35069014", directory = "songs/albums/", time_slee
         time.sleep(time_sleep*random.random())
         # 单曲id
         song_id = str(song["id"])
-        song_info = song_download_full(id=song_id, path=path)
+        song_info = song_download_entirely(id=song_id, path=path)
         songs_info.append(song_info)
     with open (path+'info.json','w') as f:
         import json
@@ -238,9 +236,11 @@ def download_album(album_id = "35069014", directory = "songs/albums/", time_slee
 
 
         
+# 下载一张专辑
+album_id = "34535673"
+download_album(album_id = album_id)
 
-# download_album(album_id = "34535673",time_sleep=0)
-
+# 下载一位歌手的所有专辑
 # # 歌手ID（默认谢春花）
 # singer = "10557"  
 # # 收集歌手所有专辑ID
@@ -249,8 +249,6 @@ def download_album(album_id = "35069014", directory = "songs/albums/", time_slee
 # for album_id in album_ids:
 #     download_album(album_id = album_id)
 
-album_id = "34535673"
 
-download_album(album_id = album_id)
 
 
